@@ -1,0 +1,19 @@
+# Python cache (udah jelas ini sampah)
+__pycache__/
+*.pyc
+
+# Virtual environment (ini juga jangan pernah di-push)
+venv/
+
+# Environment files (kalo nanti ada)
+.env
+
+# Alembic cache
+migration/__pycache__/
+
+# OS junk (biar gak nyampah)
+.DS_Store
+Thumbs.db
+
+# Logs (kalau nanti ada)
+*.log
