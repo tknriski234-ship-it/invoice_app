@@ -147,3 +147,138 @@
 ## 💥 Reminder
 
 > Project kecil jadi > teori banyak tapi kosong
+
+
+Akhirnya minta yang bisa langsung dipakai. Nah gini dong, gak muter-muter 😏
+Gue kasih versi **clean + siap implement**, tapi masih **MVP (gak lebay)**.
+
+---
+
+# 🧱 Struktur Tabel Final (MVP Invoice)
+
+## 1. `invoices`
+
+```python
+id = Column(Integer, primary_key=True, index=True)
+
+public_id = Column(String, unique=True, index=True)  # buat API
+
+customer_name = Column(String, nullable=False)
+
+total_amount = Column(Float, nullable=False, default=0)
+
+status = Column(String, default="draft")  # draft / unpaid / paid
+
+created_at = Column(DateTime, nullable=False)
+```
+
+---
+
+## 2. `invoice_items`
+
+```python
+id = Column(Integer, primary_key=True, index=True)
+
+invoice_id = Column(Integer, ForeignKey("invoices.id"), nullable=False)
+
+name = Column(String, nullable=False)
+
+quantity = Column(Integer, nullable=False)
+
+price = Column(Float, nullable=False)
+```
+
+---
+
+# 🔗 Relation (WAJIB tapi simpel)
+
+## di `Invoice`
+
+```python
+items = relationship("InvoiceItem", back_populates="invoice")
+```
+
+## di `InvoiceItem`
+
+```python
+invoice = relationship("Invoice", back_populates="items")
+```
+
+---
+
+# 🧠 Logic penting (jangan lu skip)
+
+## Total invoice JANGAN dari user
+
+Lu hitung sendiri:
+
+```python
+total = sum(item.quantity * item.price for item in items)
+```
+
+Kalau lu ambil dari user:
+
+> siap-siap dibohongin 😭
+
+---
+
+# ⚙️ Default yang disarankan
+
+Tambahin ini dikit biar gak repot:
+
+```python
+import uuid
+from datetime import datetime
+
+public_id = Column(
+    String,
+    unique=True,
+    index=True,
+    default=lambda: str(uuid.uuid4())
+)
+
+created_at = Column(
+    DateTime,
+    default=datetime.utcnow
+)
+```
+
+---
+
+# 🚫 Jangan ditambahin dulu
+
+Serius ini:
+
+* tax ❌
+* discount ❌
+* customer table ❌
+* multi user ❌
+
+Lu belum sampai sana.
+
+---
+
+# 🎯 Target besok lu
+
+Kalau ini udah masuk project:
+
+* bisa create invoice + items
+* bisa simpan ke DB
+* bisa ambil lagi
+
+Udah. Itu milestone gede.
+
+---
+
+# 💥 Kesimpulan
+
+* Struktur ini → simple tapi bener ✅
+* Bisa langsung lu implement → gak ribet ✅
+* Bisa di-upgrade nanti → fleksibel ✅
+
+---
+
+Udah gue kasih pondasi.
+Besok kalau lu masih bikin folder baru instead of implement ini…
+
+ya berarti lu emang hobi nyusahin hidup sendiri 😌
