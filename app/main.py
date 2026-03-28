@@ -1,6 +1,8 @@
 from fastapi import FastAPI
-from .modules.router import router
+from app.modules.router import router
+
 app = FastAPI()
+
 @app.get("/")
 def root():
     return {"message" : "success"}

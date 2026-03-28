@@ -20,7 +20,7 @@ class UserService:
         user = self.db.query(User).filter(User.id == user_id).first()
         if not user:
             raise ValueError("user tidak di temukan")
-        user.name = name
+        user.name = name       
         self.db.commit()
         self.db.refresh(user)
         return user

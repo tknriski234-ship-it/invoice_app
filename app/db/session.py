@@ -22,3 +22,6 @@ def get_db() -> Generator[Session,None,None]:
         yield db
     finally:
         db.close()
+
+def init_db():
+    pass
