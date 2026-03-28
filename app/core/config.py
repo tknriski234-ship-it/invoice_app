@@ -5,8 +5,8 @@ from functools import lru_cache
 BASE_DIR = Path(__file__).resolve().parents[2]
 
 class Settings(BaseSettings):
-    database_url : str
-    secret_token : str
+    database_url : str = ""
+    secret_token : str = ""
     
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     )
 
 @lru_cache
-def get_settigs():
-    return Settings()
+def get_settings():
+    return Settings() 
 
-setting = get_settigs()
+setting = get_settings()
