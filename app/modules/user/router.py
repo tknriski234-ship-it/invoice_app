@@ -16,12 +16,16 @@ def create_user(
     user = service.create_user(data.name , data.password)
     return user
 
-@router.get("/get" , response_model=List[schema.UserRead])
+@router.get("/get/{user_id}")
 def get_user(
+    user_id: int,
     db : Session = Depends(get_db)
 ):
     service = UserService(db)
-    return service.get_user()
+    try:
+        return service.get_user(user_id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 @router.put("/{user_id}" , response_model=schema.UserRead)
 def update_user(

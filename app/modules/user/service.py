@@ -13,8 +13,11 @@ class UserService:
         self.db.refresh(user)
         return user
     
-    def get_user(self):
-        return self.db.query(User).all()
+    def get_user(self , user_id: int):
+        user = self.db.query(User).filter(User.id == user_id).first()
+        if not user:
+            raise ValueError("user tidak di temukan")
+        return user
     
     def update_user(self, user_id: int, name: str):
         user = self.db.query(User).filter(User.id == user_id).first()
