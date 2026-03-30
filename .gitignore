@@ -8,16 +8,15 @@
 # Virtual Environment
 
 venv/
-.env/
 .env
 .env.*
 
-# VSCode / IDE
+# IDE
 
 .vscode/
 .idea/
 
-# OS files
+# OS
 
 .DS_Store
 Thumbs.db
@@ -26,7 +25,7 @@ Thumbs.db
 
 *.log
 
-# SQLite (kalau dipakai)
+# Database (SQLite)
 
 *.db
 *.sqlite3
@@ -35,33 +34,20 @@ Thumbs.db
 
 alembic/versions/**pycache**/
 
-# Environment variables (SANGAT PENTING)
-
-.env
-
-# Python cache
+# Build / packaging
 
 *.egg-info/
 dist/
 build/
 
-# Coverage / testing
+# Testing / cache
 
 .coverage
 htmlcov/
-
-# mypy / type checker
-
 .mypy_cache/
 .pytest_cache/
 
-# Docker (optional)
-
-*.env.docker
-docker-compose.override.yml
-
-# Node (kalau ada frontend)
+# Node (frontend)
 
 node_modules/
 .next/
-dist/
