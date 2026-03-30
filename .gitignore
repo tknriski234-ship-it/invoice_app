@@ -1,0 +1,67 @@
+# Python
+
+**pycache**/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual Environment
+
+venv/
+.env/
+.env
+.env.*
+
+# VSCode / IDE
+
+.vscode/
+.idea/
+
+# OS files
+
+.DS_Store
+Thumbs.db
+
+# Logs
+
+*.log
+
+# SQLite (kalau dipakai)
+
+*.db
+*.sqlite3
+
+# Alembic
+
+alembic/versions/**pycache**/
+
+# Environment variables (SANGAT PENTING)
+
+.env
+
+# Python cache
+
+*.egg-info/
+dist/
+build/
+
+# Coverage / testing
+
+.coverage
+htmlcov/
+
+# mypy / type checker
+
+.mypy_cache/
+.pytest_cache/
+
+# Docker (optional)
+
+*.env.docker
+docker-compose.override.yml
+
+# Node (kalau ada frontend)
+
+node_modules/
+.next/
+dist/
