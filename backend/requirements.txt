@@ -3,6 +3,7 @@ uvicorn
 sqlalchemy
 alembic
 pydantic_settings
+email-validator
 psycopg2-binary
 passlib[argon2]
 python-jose
