@@ -1,53 +1,44 @@
 # Python
-
-**pycache**/
+__pycache__/
 *.py[cod]
 *.pyo
 *.pyd
 
 # Virtual Environment
-
 venv/
 .env
 .env.*
 
 # IDE
-
 .vscode/
 .idea/
 
 # OS
-
 .DS_Store
 Thumbs.db
 
 # Logs
-
 *.log
 
 # Database (SQLite)
-
 *.db
 *.sqlite3
 
-# Alembic
-
-alembic/versions/**pycache**/
+# Migration / Alembic cache
+migration/__pycache__/
+alembic/versions/__pycache__/
 
 # Build / packaging
-
 *.egg-info/
 dist/
 build/
 
 # Testing / cache
-
 .coverage
 htmlcov/
 .mypy_cache/
 .pytest_cache/
 
 # Node (frontend)
-
 node_modules/
 .next/

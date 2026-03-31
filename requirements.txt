@@ -1,0 +1,8 @@
+fastapi 
+uvicorn
+sqlalchemy
+alembic
+pydantic_settings
+psycopg2-binary
+passlib[argon2]
+python-jose
