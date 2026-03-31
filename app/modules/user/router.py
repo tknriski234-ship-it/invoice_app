@@ -3,13 +3,12 @@ from app.db.session import get_db
 from ..user import schema
 from ..user.service import UserService
 from sqlalchemy.orm import Session
-from typing import List
 
 router = APIRouter(prefix="/user" , tags=["user"])
 
 @router.post("/create", response_model=schema.UserRead)
 def create_user(
-    data: schema.UserRegister,
+    data: schema.UserRegister ,
     db: Session = Depends(get_db)
 ):
     service = UserService(db)
