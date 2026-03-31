@@ -14,7 +14,7 @@ class User(Base):
 
     full_name : Mapped[str] = mapped_column(String(50), nullable=False)
 
-    email : Mapped[str] = mapped_column(String(254), unique=True , nullable=False , index=True)
+    email : Mapped[str] = mapped_column(String(512), unique=True , nullable=False , index=True)
 
     password_hash : Mapped[str] = mapped_column(String(255), nullable=False)
 
