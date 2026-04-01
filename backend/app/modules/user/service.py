@@ -10,9 +10,12 @@ class UserService:
     def __init__(self, db : Session) -> None:
         self.db = db
     
+    def _get_user_by_email(self ,email : str) -> User | None:
+        stmt = select(User).where(User.email == email)
+        return self.db.execute(stmt).scalar_one_or_none()
+    
     def create_user(self , data : UserCreate):
-        stmt = select(User).where(User.email == data.email)
-        existing_user = self.db.execute(stmt).scalar_one_or_none()
+        existing_user = self._get_user_by_email(data.email)
 
         if existing_user :
             raise UserAlreadyExists("Email sudah di gunakan")
@@ -32,22 +35,26 @@ class UserService:
             raise
     
     def authenticate_user(self, data : UserLogin)-> User:
-        stmt = select(User).where(User.email == data.email)
-        user = self.db.execute(stmt).scalar_one_or_none()
-
+        user = self._get_user_by_email(data.email)
         if not user:
             raise InvalidCredentials("Email atau password salah")
+
+        valid, needs_rehash = verify_password(data.password, user.password_hash)
         
-        if not verify_password(data.password , user.password_hash):
+        
+        if not valid:
             raise InvalidCredentials("Email atau password salah")
+        
         if not user.is_active:
             raise UserNotActive("User tidak aktif")
         
         try:
+            if needs_rehash:
+                user.password_hash = hash_password(data.password)
             user.last_login = datetime.now(timezone.utc)
             self.db.commit()
             self.db.refresh(user)
             return user
-        except:
+        except Exception:
             self.db.rollback()
             raise

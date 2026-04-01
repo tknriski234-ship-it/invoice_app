@@ -6,8 +6,10 @@ ph = PasswordHasher()
 def hash_password(password : str) -> str:
     return ph.hash(password)
 
-def verify_password(password: str, hashed: str) -> bool:
+def verify_password(password: str, hashed: str) -> tuple[bool , bool]:
     try:
-        return ph.verify(hashed, password)
+        valid = ph.verify(hashed, password)
+        needs_rehash = ph.check_needs_rehash(hashed)
+        return valid , needs_rehash
     except (VerifyMismatchError, VerificationError):
-        return False
+        return False , False
