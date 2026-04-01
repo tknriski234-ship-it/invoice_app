@@ -1,4 +1,4 @@
-from app.core.config import setting
+from backend.app.core.config import settings
 
-print(setting.database_url)
-print(setting.secret_token)
+print(settings.database_url)
+print(settings.secret_token)

@@ -1,10 +1,11 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from app.modules.user.models import User
-from app.modules.user.schema import UserCreate , UserLogin
+from app.modules.user.schema import UserCreate , UserLogin, TokenResponse, UserOut
 from app.core.security import hash_password , verify_password
 from app.core.exception import UserAlreadyExists , InvalidCredentials , UserNotActive
-from  datetime import datetime , timezone
+from datetime import datetime , timezone
+from app.core.token import create_access_token
 
 class UserService:
     def __init__(self, db : Session) -> None:
@@ -34,7 +35,7 @@ class UserService:
             self.db.rollback()
             raise
     
-    def authenticate_user(self, data : UserLogin)-> User:
+    def authenticate_user(self, data : UserLogin) -> TokenResponse:
         user = self._get_user_by_email(data.email)
         if not user:
             raise InvalidCredentials("Email atau password salah")
@@ -48,13 +49,25 @@ class UserService:
         if not user.is_active:
             raise UserNotActive("User tidak aktif")
         
+        
         try:
             if needs_rehash:
                 user.password_hash = hash_password(data.password)
             user.last_login = datetime.now(timezone.utc)
             self.db.commit()
             self.db.refresh(user)
-            return user
+            
+            token = create_access_token({
+            "sub": str(user.public_id)
+            })
+
+            return TokenResponse(
+                access_token=token,
+                token_type="bearer",
+                user=UserOut.model_validate(user)
+            )
         except Exception:
             self.db.rollback()
             raise
+        
+        

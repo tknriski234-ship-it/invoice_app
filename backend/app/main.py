@@ -2,7 +2,7 @@ from fastapi import FastAPI , Depends , HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.db.session import get_db
-from app.modules.user.schema import UserOut , UserCreate , UserLogin
+from app.modules.user.schema import UserOut , UserCreate , UserLogin, TokenResponse
 from app.modules.user.service import UserService
 from app.core.exception import UserAlreadyExists , InvalidCredentials , UserNotActive
 app = FastAPI()
@@ -25,7 +25,7 @@ def create_user(data : UserCreate, db : Session = Depends(get_db)):
     except UserAlreadyExists as e:
         raise HTTPException(status_code=400 , detail=e.message)
     
-@app.post("/login" , response_model=UserOut)
+@app.post("/login" , response_model=TokenResponse)
 def login(data : UserLogin , db : Session = Depends(get_db)):
     service = UserService(db)
 
@@ -36,4 +36,3 @@ def login(data : UserLogin , db : Session = Depends(get_db)):
         raise HTTPException(status_code=401 , detail= e.message)
     except UserNotActive as e:
         raise HTTPException(status_code=403 , detail= e.message)
-
