@@ -1,9 +1,10 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from app.modules.user.models import User
-from app.modules.user.schema import UserCreate
+from app.modules.user.schema import UserCreate , UserLogin
 from app.core.security import hash_password , verify_password
-from app.core.exception import UserAlreadyExists
+from app.core.exception import UserAlreadyExists , InvalidCredentials , UserNotActive
+from  datetime import datetime , timezone
 
 class UserService:
     def __init__(self, db : Session) -> None:
@@ -29,6 +30,24 @@ class UserService:
         except Exception:
             self.db.rollback()
             raise
+    
+    def authenticate_user(self, data : UserLogin)-> User:
+        stmt = select(User).where(User.email == data.email)
+        user = self.db.execute(stmt).scalar_one_or_none()
 
-
-# TODO: update last_login setelah login sukses
+        if not user:
+            raise InvalidCredentials("Email atau password salah")
+        
+        if not verify_password(data.password , user.password_hash):
+            raise InvalidCredentials("Email atau password salah")
+        if not user.is_active:
+            raise UserNotActive("User tidak aktif")
+        
+        try:
+            user.last_login = datetime.now(timezone.utc)
+            self.db.commit()
+            self.db.refresh(user)
+            return user
+        except:
+            self.db.rollback()
+            raise
