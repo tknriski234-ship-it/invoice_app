@@ -1,5 +1,6 @@
 from fastapi import FastAPI , Depends , HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.db.session import get_db
@@ -47,3 +48,12 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db : Session = Depen
 @app.get("/me" , response_model=UserOut)
 def  get_me(current_user : User = Depends(get_current_user)):
     return current_user
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # nanti ganti domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
