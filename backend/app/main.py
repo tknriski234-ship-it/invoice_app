@@ -1,10 +1,14 @@
 from fastapi import FastAPI , Depends , HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.db.session import get_db
 from app.modules.user.schema import UserOut , UserCreate , UserLogin, TokenResponse
 from app.modules.user.service import UserService
 from app.core.exception import UserAlreadyExists , InvalidCredentials , UserNotActive
+from app.core.dependencies import get_current_user
+from app.modules.user.models import User
+
 app = FastAPI()
 
 @app.get("/get_db")
@@ -26,13 +30,20 @@ def create_user(data : UserCreate, db : Session = Depends(get_db)):
         raise HTTPException(status_code=400 , detail=e.message)
     
 @app.post("/login" , response_model=TokenResponse)
-def login(data : UserLogin , db : Session = Depends(get_db)):
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db : Session = Depends(get_db)):
     service = UserService(db)
 
     try:
-        user = service.authenticate_user(data)
-        return user
+        data = UserLogin(
+            email=form_data.username,
+            password=form_data.password
+)
+        return service.authenticate_user(data)
     except InvalidCredentials as e:
         raise HTTPException(status_code=401 , detail= e.message)
     except UserNotActive as e:
         raise HTTPException(status_code=403 , detail= e.message)
+
+@app.get("/me" , response_model=UserOut)
+def  get_me(current_user : User = Depends(get_current_user)):
+    return current_user
