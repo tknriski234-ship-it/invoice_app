@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from app.modules.user.models import User
-from app.modules.user.schema import UserCreate , UserLogin, TokenResponse, UserOut
+from app.modules.user.schema import UserCreate , UserLogin, TokenResponse, UserOut , UserUpdate
 from app.core.security import hash_password , verify_password
 from app.core.exception import UserAlreadyExists , InvalidCredentials , UserNotActive
 from datetime import datetime , timezone
@@ -69,5 +69,14 @@ class UserService:
         except Exception:
             self.db.rollback()
             raise
-        
-        
+    def update_name(self,current_user : User ,data : UserUpdate)-> User:
+        current_user.full_name = data.full_name
+
+        try:
+            self.db.commit()
+            self.db.refresh(current_user)
+            return current_user
+        except:
+            self.db.rollback()
+            raise
+

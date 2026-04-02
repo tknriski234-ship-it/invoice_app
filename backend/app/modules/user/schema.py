@@ -29,3 +29,6 @@ class TokenResponse(BaseModel):
     access_token : str
     token_type: str
     user : UserOut
+
+class UserUpdate(BaseModel):
+    full_name : str
