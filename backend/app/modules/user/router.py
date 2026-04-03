@@ -36,9 +36,9 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db : Session = Depen
     except UserNotActive as e:
         raise HTTPException(status_code=403 , detail= e.message)
 
-# @router.get("/me", response_model=UserOut)
-# def get_me(current_user : User = Depends(get_current_user)):
-#     return current_user
+@router.get("/me", response_model=UserOut)
+def get_me(current_user : User = Depends(get_current_user)):
+    return current_user
 
 @router.patch("/me", response_model=UserOut)
 def update_name(data: UserUpdate , db : Session = Depends(get_db) , current_user : User = Depends(get_current_user)):

@@ -39,7 +39,7 @@ export default function LoginPage() {
         password,
       });
 
-      const res = await fetch(`${API_BASE_URL}/login`, {
+      const res = await fetch(`${API_BASE_URL}/user/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -66,7 +66,7 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,#d8f3ff,transparent_35%),linear-gradient(180deg,#f8fbff_0%,#eef4ff_45%,#edf7f1_100%)] px-4 py-10 text-slate-900">
       <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-        <section className="rounded-[2rem] border border-white/70 bg-white/80 p-8 shadow-[0_30px_80px_rgba(15,23,42,0.12)] backdrop-blur">
+        <section className="rounded-4xl border border-white/70 bg-white/80 p-8 shadow-[0_30px_80px_rgba(15,23,42,0.12)] backdrop-blur">
           <p className="mb-3 text-sm font-medium uppercase tracking-[0.3em] text-sky-700">
             Invoice App
           </p>
@@ -90,14 +90,14 @@ export default function LoginPage() {
           </div>
         </section>
 
-        <section className="rounded-[2rem] border border-slate-200 bg-slate-950 p-8 text-white shadow-[0_24px_70px_rgba(15,23,42,0.24)]">
+        <section className="rounded-4xl border border-slate-200 bg-slate-950 p-8 text-white shadow-[0_24px_70px_rgba(15,23,42,0.24)]">
           <form className="space-y-5" onSubmit={handleLogin}>
             <div>
               <label className="mb-2 block text-sm text-slate-300">Email</label>
               <input
                 className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 outline-none transition focus:border-sky-400"
                 type="email"
-                placeholder="rizky@example.com"
+                placeholder="user@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -150,9 +150,23 @@ export default function LoginPage() {
                   {JSON.stringify(result.user, null, 2)}
                 </pre>
               </div>
+
+              <div><p className="text-sm text-slate-300">Token ini akan digunakan untuk mengakses endpoint yang memerlukan autentikasi.</p></div>
             </div>
           ) : null}
         </section>
+
+        <section className="rounded-4xl border border-slate-200 bg-slate-950 p-8 text-white shadow-[0_24px_70px_rgba(15,23,42,0.24)]">
+          <div><nav>
+            <ul className="flex space-x-4">
+              <li><a href="#" className="text-slate-300 hover:text-white">Home</a></li>
+              <li><a href="#" className="text-slate-300 hover:text-white">About</a></li>
+              <li><a href="#" className="text-slate-300 hover:text-white">Contact</a></li>
+            </ul>
+          </nav></div>
+        </section>
+
+
       </div>
     </main>
   );

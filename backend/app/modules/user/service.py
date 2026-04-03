@@ -10,14 +10,14 @@ from app.core.token import create_access_token
 class UserService:
     def __init__(self, db : Session) -> None:
         self.db = db
-    
+
     def _get_user_by_email(self ,email : str) -> User | None:
         stmt = select(User).where(User.email == email)
         return self.db.execute(stmt).scalar_one_or_none()
-    
+
     def create_user(self , data : UserCreate):
         existing_user = self._get_user_by_email(data.email)
-
+        
         if existing_user :
             raise UserAlreadyExists("Email sudah di gunakan")
 
@@ -34,7 +34,7 @@ class UserService:
         except Exception:
             self.db.rollback()
             raise
-    
+
     def authenticate_user(self, data : UserLogin) -> TokenResponse:
         user = self._get_user_by_email(data.email)
         if not user:
@@ -42,14 +42,12 @@ class UserService:
 
         valid, needs_rehash = verify_password(data.password, user.password_hash)
         
-        
         if not valid:
             raise InvalidCredentials("Email atau password salah")
         
         if not user.is_active:
             raise UserNotActive("User tidak aktif")
-        
-        
+
         try:
             if needs_rehash:
                 user.password_hash = hash_password(data.password)
