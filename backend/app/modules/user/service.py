@@ -74,7 +74,7 @@ class UserService:
             self.db.commit()
             self.db.refresh(current_user)
             return current_user
-        except:
+        except Exception:
             self.db.rollback()
             raise
 

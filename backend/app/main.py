@@ -3,10 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.db.session import get_db
-from app.modules.router import router as user_router
+from app.modules.router import router as main_router
+
 app = FastAPI()
 
-app.include_router(user_router)
+app.include_router(main_router)
 
 @app.get("/get_db")
 def get_cek_db(db : Session = Depends(get_db)):
