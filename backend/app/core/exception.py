@@ -12,3 +12,9 @@ class InvalidCredentials(AppException):
 
 class UserNotActive(AppException):
     pass
+
+class InvoiceAlreadyExists(AppException):
+    pass
+
+class InvoiceNotFound(AppException):
+    pass
