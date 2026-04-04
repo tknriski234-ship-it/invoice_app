@@ -32,3 +32,6 @@ class TokenResponse(BaseModel):
 
 class UserUpdate(BaseModel):
     full_name : str
+
+class UserDelete(BaseModel):
+    password : str

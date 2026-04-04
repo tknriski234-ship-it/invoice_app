@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from app.modules.user.models import User
-from app.modules.user.schema import UserCreate , UserLogin, TokenResponse, UserOut , UserUpdate
+from app.modules.user.schema import UserCreate , UserLogin, TokenResponse, UserOut , UserUpdate ,UserDelete
 from app.core.security import hash_password , verify_password
 from app.core.exception import UserAlreadyExists , InvalidCredentials , UserNotActive
 from datetime import datetime , timezone
@@ -77,4 +77,15 @@ class UserService:
         except Exception:
             self.db.rollback()
             raise
+    def delete_user(self,current_user : User, data : UserDelete) -> None:
+        valid , _ = verify_password(data.password , current_user.password_hash)
 
+        if not valid:
+            raise InvalidCredentials("Password salah")
+        
+        try:
+            self.db.delete(current_user)
+            self.db.commit()
+        except:
+            self.db.rollback()
+            raise
