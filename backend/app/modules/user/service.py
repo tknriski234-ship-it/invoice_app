@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from app.modules.user.models import User
-from app.modules.user.schema import UserCreate , UserLogin, TokenResponse, UserOut , UserUpdate ,UserDelete
+from app.modules.user.schema import UserCreate , UserLogin, TokenResponse, UserOut , UserUpdate ,UserDelete , UserChangePassword
 from app.core.security import hash_password , verify_password
 from app.core.exception import UserAlreadyExists , InvalidCredentials , UserNotActive
 from datetime import datetime , timezone
@@ -86,6 +86,23 @@ class UserService:
         try:
             self.db.delete(current_user)
             self.db.commit()
+        except:
+            self.db.rollback()
+            raise
+    def change_password(self,current_user : User , data : UserChangePassword)-> User:
+        valid , _ = verify_password(data.old_password , current_user.password_hash)
+
+        if not valid:
+            raise InvalidCredentials("Password salah")
+        
+        if data.old_password == data.new_password:
+            raise InvalidCredentials("Password tidak boleh sama")
+        
+        try:
+            current_user.password_hash = hash_password(data.new_password)
+            self.db.commit()
+            self.db.refresh(current_user)
+            return current_user
         except:
             self.db.rollback()
             raise
