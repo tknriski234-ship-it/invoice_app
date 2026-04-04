@@ -1,9 +1,8 @@
 from fastapi import APIRouter , Depends , HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from sqlalchemy import text
 from app.db.session import get_db
-from app.modules.user.schema import UserOut , UserCreate , UserLogin, TokenResponse , UserUpdate ,UserDelete , UserChangePassword
+from app.modules.user.schema import UserOut , UserCreate , UserLogin, LoginResponse , UserUpdate ,UserDelete , UserChangePassword
 from app.modules.user.service import UserService
 from app.core.exception import UserAlreadyExists , InvalidCredentials , UserNotActive
 from app.core.dependencies import get_current_user
@@ -25,7 +24,7 @@ def create_user(
         raise HTTPException(status_code=400 , detail=e.message)
 
 
-@router.post("/login" , response_model=TokenResponse)
+@router.post("/login" , response_model=LoginResponse)
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db : Session = Depends(get_db)
@@ -58,17 +57,17 @@ def update_name(
     current_user : User = Depends(get_current_user)
 ):
     service = UserService(db)
-    return service.update_name(current_user , data)
+    return service.update_profile(current_user , data)
 
 
 @router.delete("/me")
-def delete_user(
+def delete_me(
     data : UserDelete,
     db : Session =Depends(get_db),
     current_user : User = Depends(get_current_user)
 ):
     service = UserService(db)
-    service.delete_user(current_user , data)
+    service.delete_me(current_user , data)
 
     return {"message" : "User berhasil di hapus"}
 

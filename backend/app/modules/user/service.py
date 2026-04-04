@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from app.modules.user.models import User
-from app.modules.user.schema import UserCreate , UserLogin, TokenResponse, UserOut , UserUpdate ,UserDelete , UserChangePassword
+from app.modules.user.schema import UserCreate, UserLogin, LoginResponse, UserOut ,UserUpdate, UserDelete ,UserChangePassword
 from app.core.security import hash_password , verify_password
 from app.core.exception import UserAlreadyExists , InvalidCredentials , UserNotActive
 from datetime import datetime , timezone
@@ -35,7 +35,7 @@ class UserService:
             self.db.rollback()
             raise
 
-    def authenticate_user(self, data : UserLogin) -> TokenResponse:
+    def authenticate_user(self, data : UserLogin) -> LoginResponse:
         user = self._get_user_by_email(data.email)
         if not user:
             raise InvalidCredentials("Email atau password salah")
@@ -59,7 +59,7 @@ class UserService:
             "sub": str(user.public_id)
             })
 
-            return TokenResponse(
+            return LoginResponse(
                 access_token=token,
                 token_type="bearer",
                 user=UserOut.model_validate(user)
@@ -67,7 +67,7 @@ class UserService:
         except Exception:
             self.db.rollback()
             raise
-    def update_name(self,current_user : User ,data : UserUpdate)-> User:
+    def update_profile(self,current_user : User ,data : UserUpdate)-> User:
         current_user.full_name = data.full_name
 
         try:
@@ -77,7 +77,7 @@ class UserService:
         except Exception:
             self.db.rollback()
             raise
-    def delete_user(self,current_user : User, data : UserDelete) -> None:
+    def delete_me(self,current_user : User, data : UserDelete) -> None:
         valid , _ = verify_password(data.password , current_user.password_hash)
 
         if not valid:
@@ -89,11 +89,11 @@ class UserService:
         except Exception:
             self.db.rollback()
             raise
-    def change_password(self,current_user : User , data : UserChangePassword)-> User:
+    def change_password(self,current_user : User , data : UserChangePassword)-> None:
         valid , _ = verify_password(data.old_password , current_user.password_hash)
 
         if not valid:
-            raise InvalidCredentials("Password salah")
+            raise InvalidCredentials("Password lama salah")
         
         if data.old_password == data.new_password:
             raise InvalidCredentials("Password tidak boleh sama")
@@ -102,7 +102,6 @@ class UserService:
             current_user.password_hash = hash_password(data.new_password)
             self.db.commit()
             self.db.refresh(current_user)
-            return current_user
         except Exception:
             self.db.rollback()
             raise

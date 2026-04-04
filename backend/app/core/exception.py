@@ -12,4 +12,3 @@ class InvalidCredentials(AppException):
 
 class UserNotActive(AppException):
     pass
-

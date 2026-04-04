@@ -1,10 +1,14 @@
 from sqlalchemy import String , DateTime ,Boolean
-from sqlalchemy.orm import Mapped , mapped_column
+from sqlalchemy.orm import Mapped , mapped_column , relationship
 from sqlalchemy.dialects.postgresql import UUID
 from app.db.base import Base
 from datetime import datetime ,timezone
 import uuid
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from app.modules.invoice.models import Invoice
+    
 class User(Base):
     __tablename__ = "users"
 
@@ -28,3 +32,7 @@ class User(Base):
 
     is_active : Mapped[bool] = mapped_column(Boolean, default=True)
 
+    invoices: Mapped[list["Invoice"]] = relationship(
+    back_populates="user",
+    cascade="all, delete-orphan"
+)

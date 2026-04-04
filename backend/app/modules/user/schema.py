@@ -1,4 +1,4 @@
-from pydantic import BaseModel , ConfigDict ,EmailStr
+from pydantic import BaseModel , ConfigDict ,EmailStr,Field , field_validator
 import uuid
 from datetime import datetime
 
@@ -19,13 +19,22 @@ class UserOut(BaseModel):
 class UserCreate(BaseModel):
     full_name : str
     email : EmailStr
-    password : str
+    password : str = Field(min_length=8)
+
+    @field_validator("full_name")
+    @classmethod
+    def validate_full_name(cls,value : str):
+        value = value.strip()
+
+        if not value:
+            raise ValueError("nama tidak boleh kosong")
+        return value
 
 class UserLogin(BaseModel):
     email : EmailStr
     password: str
 
-class TokenResponse(BaseModel):
+class LoginResponse(BaseModel):
     access_token : str
     token_type: str
     user : UserOut
@@ -33,10 +42,19 @@ class TokenResponse(BaseModel):
 class UserUpdate(BaseModel):
     full_name : str
 
+    @field_validator("full_name")
+    @classmethod
+    def validate_full_name(cls,value : str):
+        value = value.strip()
+
+        if not value:
+            raise ValueError("nama tidak boleh kosong")
+        return value
+
 class UserDelete(BaseModel):
     password : str
 
 class UserChangePassword(BaseModel):
     old_password : str
-    new_password : str
+    new_password : str = Field(min_length=8)
 
