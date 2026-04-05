@@ -8,7 +8,8 @@ from typing import TYPE_CHECKING
 from decimal import Decimal
 
 if TYPE_CHECKING:
-    from app.modules.user.models import User
+    from app.modules.user.models import User    
+    from app.modules.invoice_items.models import InvoiceItem
 
 class Invoice(Base):
     __tablename__ = "invoices"
@@ -38,6 +39,9 @@ class Invoice(Base):
 
     updated_at : Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda : datetime.now(timezone.utc),onupdate=lambda : datetime.now(timezone.utc))
 
-
-
     user: Mapped["User"] = relationship(back_populates="invoices")
+
+    items: Mapped[list["InvoiceItem"]] = relationship(
+        back_populates="invoice",
+        cascade="all, delete-orphan"
+    )

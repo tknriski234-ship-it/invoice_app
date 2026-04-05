@@ -62,3 +62,5 @@ class InvoiceUpdate(BaseModel):
         if not value:
             raise ValueError("title tidak boleh kosong")
         return value
+
+

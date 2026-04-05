@@ -1,16 +1,16 @@
 import uuid
 from fastapi import APIRouter , Depends , HTTPException
-from app.modules.invoice.schema import InvoiceCreate , InvoiceOut , InvoiceUpdate
+from app.modules.invoice.schema import InvoiceCreate ,InvoiceOut , InvoiceUpdate
 from app.db.session import get_db
 from sqlalchemy.orm import Session
 from app.modules.invoice.service import InvoiceService
-from app.core.exception import InvoiceAlreadyExists ,InvoiceNotFound
+from app.core.exception import InvoiceAlreadyExists, InvoiceNotFound
 from app.modules.user.models import User
 from app.core.dependencies import get_current_user
 
 router = APIRouter(prefix="/invoice",tags=["Invoice"])
 
-@router.post("/create" , response_model=InvoiceOut)
+@router.post("/" , response_model=InvoiceOut)
 def create_invoice(
     data : InvoiceCreate, 
     db : Session = Depends(get_db), 

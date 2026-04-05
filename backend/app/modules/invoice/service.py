@@ -2,9 +2,9 @@ import uuid
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from datetime import datetime
-from app.core.exception import InvoiceAlreadyExists , InvoiceNotFound
+from app.core.exception import InvoiceAlreadyExists ,InvoiceNotFound
 from app.modules.invoice.models import Invoice
-from app.modules.invoice.schema import InvoiceCreate, InvoiceStatus ,InvoiceUpdate
+from app.modules.invoice.schema import InvoiceCreate,InvoiceStatus ,InvoiceUpdate
 from app.modules.user.models import User
 
 
@@ -15,6 +15,18 @@ class InvoiceService:
     def _get_invoice_by_number(self, invoice_number: str) -> Invoice | None:
         stmt = select(Invoice).where(Invoice.invoice_number == invoice_number)
         return self.db.execute(stmt).scalar_one_or_none()
+    def _get_owned_invoice(self, current_user: User, public_id: uuid.UUID) -> Invoice:
+        stmt = select(Invoice).where(
+            Invoice.public_id == public_id,
+            Invoice.user_id == current_user.id
+        )
+        invoice = self.db.execute(stmt).scalar_one_or_none()
+
+        if not invoice:
+            raise InvoiceNotFound("Invoice tidak ditemukan")
+
+        return invoice
+
     
     def _generate_invoice_number(self) -> str:
         year = datetime.now().year
@@ -64,21 +76,10 @@ class InvoiceService:
         )
         return list(self.db.execute(stmt).scalars().all())
     def get_invoice_detail(self, current_user : User, public_id : uuid.UUID) -> Invoice:
-        stmt = select(Invoice).where(Invoice.public_id == public_id,Invoice.user_id == current_user.id)
-
-        invoice = self.db.execute(stmt).scalar_one_or_none()
-
-        if not invoice:
-            raise InvoiceNotFound("invoice tidak ditemukan")
-
-        return invoice
+        return self._get_owned_invoice(current_user, public_id)
     
     def update_invoice(self,current_user : User, public_id : uuid.UUID, data : InvoiceUpdate) -> Invoice:
-        stmt = select(Invoice).where(Invoice.public_id == public_id,Invoice.user_id == current_user.id)
-        invoice = self.db.execute(stmt).scalar_one_or_none()
-
-        if not invoice :
-            raise InvoiceNotFound("Invoice tidak ditemukan")
+        invoice = self._get_owned_invoice(current_user, public_id)
 
         invoice.title = data.title
         invoice.amount = data.amount
@@ -94,11 +95,7 @@ class InvoiceService:
             raise
 
     def delete_invoice(self,current_user: User , public_id : uuid.UUID ,) -> None:
-        stmt = select(Invoice).where(Invoice.public_id == public_id, Invoice.user_id == current_user.id)
-        invoice = self.db.execute(stmt).scalar_one_or_none()
-
-        if not invoice:
-            raise InvoiceNotFound("Invoice tidak ditemukan")
+        invoice = self._get_owned_invoice(current_user, public_id)
         
         try:
             self.db.delete(invoice)

@@ -18,3 +18,6 @@ class InvoiceAlreadyExists(AppException):
 
 class InvoiceNotFound(AppException):
     pass
+
+class InvoiceItemNotFound(AppException):
+    pass
