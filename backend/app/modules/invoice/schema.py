@@ -7,7 +7,6 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 class InvoiceCreate(BaseModel):
     title: str
-    amount: Decimal = Field(gt=0)
     issued_date: date
     due_date: date
 
@@ -51,7 +50,6 @@ class InvoiceOut(BaseModel):
 
 class InvoiceUpdate(BaseModel):
     title: str
-    amount: Decimal = Field(gt=0)
     due_date: date
     status: InvoiceStatus
 
@@ -62,5 +60,4 @@ class InvoiceUpdate(BaseModel):
         if not value:
             raise ValueError("title tidak boleh kosong")
         return value
-
 

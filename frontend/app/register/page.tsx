@@ -7,21 +7,22 @@ import { FormEvent, useEffect, useState } from "react";
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
-type LoginResponse = {
-  access_token: string;
-  token_type: string;
-  user: {
-    full_name: string;
-    email: string;
-  };
+type RegisterPayload = {
+  full_name: string;
+  email: string;
+  password: string;
 };
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [form, setForm] = useState<RegisterPayload>({
+    full_name: "",
+    email: "",
+    password: "",
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [checkingSession, setCheckingSession] = useState(true);
 
   useEffect(() => {
@@ -40,41 +41,36 @@ export default function LoginPage() {
     event.preventDefault();
     setLoading(true);
     setError("");
+    setSuccess("");
 
     try {
-      const body = new URLSearchParams({
-        username: email,
-        password,
-      });
-
-      const response = await fetch(`${API_BASE_URL}/user/login`, {
+      const response = await fetch(`${API_BASE_URL}/user/create`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Type": "application/json",
         },
-        body: body.toString(),
+        body: JSON.stringify(form),
       });
 
-      const data: LoginResponse | { detail?: string } = await response.json();
+      const data = await response.json();
 
       if (!response.ok) {
-        setError(
-          "detail" in data && data.detail
-            ? data.detail
-            : "Login gagal. Cek email dan password kamu."
-        );
+        setError(data.detail ?? "Register gagal. Coba cek data yang kamu isi.");
         return;
       }
 
-      if ("access_token" in data) {
-        localStorage.setItem("token", data.access_token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-      }
+      setSuccess("Akun berhasil dibuat. Mengarahkan ke login...");
+      setForm({
+        full_name: "",
+        email: "",
+        password: "",
+      });
 
-      router.push("/home");
-      router.refresh();
+      window.setTimeout(() => {
+        router.push("/login");
+      }, 1200);
     } catch {
-      setError("Tidak bisa terhubung ke backend. Pastikan FastAPI sedang berjalan.");
+      setError("Tidak bisa terhubung ke backend saat membuat akun.");
     } finally {
       setLoading(false);
     }
@@ -84,9 +80,7 @@ export default function LoginPage() {
     return (
       <div className="min-h-screen bg-white text-[#1E2022]">
         <main className="mx-auto flex min-h-screen max-w-5xl items-center px-6">
-          <div className="text-sm text-[#52616B]">
-            Memeriksa sesi login...
-          </div>
+          <div className="text-sm text-[#52616B]">Memeriksa sesi login...</div>
         </main>
       </div>
     );
@@ -100,13 +94,33 @@ export default function LoginPage() {
           <span className="absolute bottom-0 right-0 top-0 w-px bg-[#C9D6DF]" />
 
           <p className="text-sm font-medium uppercase tracking-[0.2em] text-[#52616B]">
-            Login
+            Register
           </p>
           <h2 className="mt-4 text-4xl font-semibold tracking-tight text-[#1E2022]">
-            Masuk ke akunmu.
+            Buat akun baru.
           </h2>
 
           <form className="mt-10 space-y-5" onSubmit={handleSubmit}>
+            <div>
+              <label
+                htmlFor="full_name"
+                className="mb-2 block text-sm font-medium text-[#52616B]"
+              >
+                Full name
+              </label>
+              <input
+                id="full_name"
+                type="text"
+                value={form.full_name}
+                onChange={(event) =>
+                  setForm((prev) => ({ ...prev, full_name: event.target.value }))
+                }
+                className="w-full border-b border-[#C9D6DF] bg-transparent px-0 py-3 text-sm outline-none transition focus:border-[#52616B]"
+                placeholder="Rizky Pratama"
+                required
+              />
+            </div>
+
             <div>
               <label
                 htmlFor="email"
@@ -117,8 +131,10 @@ export default function LoginPage() {
               <input
                 id="email"
                 type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                value={form.email}
+                onChange={(event) =>
+                  setForm((prev) => ({ ...prev, email: event.target.value }))
+                }
                 className="w-full border-b border-[#C9D6DF] bg-transparent px-0 py-3 text-sm outline-none transition focus:border-[#52616B]"
                 placeholder="your@email.com"
                 required
@@ -135,10 +151,12 @@ export default function LoginPage() {
               <input
                 id="password"
                 type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                value={form.password}
+                onChange={(event) =>
+                  setForm((prev) => ({ ...prev, password: event.target.value }))
+                }
                 className="w-full border-b border-[#C9D6DF] bg-transparent px-0 py-3 text-sm outline-none transition focus:border-[#52616B]"
-                placeholder="Enter your password"
+                placeholder="Minimal 8 karakter"
                 required
               />
             </div>
@@ -149,22 +167,28 @@ export default function LoginPage() {
               </div>
             ) : null}
 
+            {success ? (
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                {success}
+              </div>
+            ) : null}
+
             <button
               type="submit"
               disabled={loading}
               className="w-full rounded-full bg-[#1E2022] px-5 py-3 text-sm font-medium text-[#F0F5F9] transition hover:bg-[#52616B] disabled:cursor-not-allowed disabled:bg-[#C9D6DF] disabled:text-[#52616B]"
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? "Creating account..." : "Create Account"}
             </button>
           </form>
 
           <div className="mt-6 border-t border-[#C9D6DF] pt-5 text-sm text-[#52616B]">
-            Belum punya akun?{" "}
+            Sudah punya akun?{" "}
             <Link
-              href="/register"
+              href="/login"
               className="font-medium text-[#1E2022] transition hover:text-[#52616B]"
             >
-              Buat akun dulu di sini.
+              Login di sini.
             </Link>
           </div>
         </section>

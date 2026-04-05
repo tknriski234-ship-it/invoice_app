@@ -1,14 +1,24 @@
 import uuid
+from decimal import Decimal
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from app.core.exception import InvoiceNotFound, InvoiceItemNotFound
-from app.modules.invoice.models import Invoice, InvoiceItem
+from app.modules.invoice.models import Invoice
+from app.modules.invoice_items.models import InvoiceItem
 from app.modules.invoice_items.schema import InvoiceItemCreate, InvoiceItemUpdate
 from app.modules.user.models import User
 
 class InvoiceItemsService:
     def __init__(self,db :Session) -> None:
         self.db = db   
+
+    def _recalculate_invoice_amount(self, invoice: Invoice) -> None:
+        stmt = select(InvoiceItem).where(InvoiceItem.invoice_id == invoice.id)
+        items = self.db.execute(stmt).scalars().all()
+        invoice.amount = sum(
+            (item.quantity * item.unit_price for item in items),
+            start=Decimal("0.00")
+        )
 
     def _get_owned_invoice(self, current_user: User, public_id: uuid.UUID) -> Invoice:
         stmt = select(Invoice).where(
@@ -55,6 +65,8 @@ class InvoiceItemsService:
 
         try:
             self.db.add(item)
+            self.db.flush()
+            self._recalculate_invoice_amount(invoice)
             self.db.commit()
             self.db.refresh(item)
             return item
@@ -96,6 +108,8 @@ class InvoiceItemsService:
         item.unit_price = data.unit_price
 
         try:
+            invoice = item.invoice
+            self._recalculate_invoice_amount(invoice)
             self.db.commit()
             self.db.refresh(item)
             return item
@@ -105,9 +119,12 @@ class InvoiceItemsService:
 
     def delete_invoice_item(self, current_user: User, item_public_id: uuid.UUID) -> None:
         item = self._get_owned_invoice_item(current_user, item_public_id)
+        invoice = item.invoice
 
         try:
             self.db.delete(item)
+            self.db.flush()
+            self._recalculate_invoice_amount(invoice)
             self.db.commit()
         except Exception:
             self.db.rollback()

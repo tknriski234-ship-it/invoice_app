@@ -8,7 +8,7 @@ from app.core.exception import InvoiceItemNotFound, InvoiceNotFound
 from app.modules.user.models import User
 from app.core.dependencies import get_current_user
 
-router = APIRouter(prefix="/invoice")
+router = APIRouter(prefix="/invoice", tags=["invoice Item"])
 
 @router.post("/{public_id}/items", response_model=InvoiceItemOut)
 def create_invoice_item(

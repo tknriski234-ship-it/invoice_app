@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from datetime import datetime
@@ -15,6 +16,7 @@ class InvoiceService:
     def _get_invoice_by_number(self, invoice_number: str) -> Invoice | None:
         stmt = select(Invoice).where(Invoice.invoice_number == invoice_number)
         return self.db.execute(stmt).scalar_one_or_none()
+    
     def _get_owned_invoice(self, current_user: User, public_id: uuid.UUID) -> Invoice:
         stmt = select(Invoice).where(
             Invoice.public_id == public_id,
@@ -54,7 +56,7 @@ class InvoiceService:
             user_id=current_user.id,
             invoice_number=invoice_number,
             title=data.title,
-            amount=data.amount,
+            amount=Decimal("0.00"),
             status=InvoiceStatus.draft.value,
             issued_date=data.issued_date,
             due_date=data.due_date,
@@ -82,7 +84,6 @@ class InvoiceService:
         invoice = self._get_owned_invoice(current_user, public_id)
 
         invoice.title = data.title
-        invoice.amount = data.amount
         invoice.due_date = data.due_date
         invoice.status = data.status.value
 
