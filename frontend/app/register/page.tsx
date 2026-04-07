@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
+import { AuthHeader } from "@/components/auth-header";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
@@ -87,9 +88,29 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-[#1E2022]">
-      <main className="mx-auto flex max-w-3xl flex-1 items-center px-6 py-20">
-        <section className="relative mx-auto w-full max-w-lg px-8">
+    <div className="flex min-h-screen flex-col bg-white text-[#1E2022]">
+      <AuthHeader
+        actions={
+          <Link
+            href="/login"
+            className="rounded-full border border-[#C9D6DF] px-4 py-2 text-sm font-medium text-[#52616B] transition hover:border-[#1E2022] hover:text-[#1E2022]"
+          >
+            Login
+          </Link>
+        }
+      />
+
+      <div className="mx-auto w-full max-w-3xl px-6 pt-6">
+        <Link
+          href="/"
+          className="text-base font-medium text-[#52616B] transition hover:text-[#1E2022]"
+        >
+          {"<- Back"}
+        </Link>
+      </div>
+
+      <main className="mx-auto flex w-full max-w-3xl flex-1 items-center justify-center px-6 py-20">
+        <section className="relative mx-auto w-full max-w-lg px-8 py-8">
           <span className="absolute bottom-0 left-0 top-0 w-px bg-[#C9D6DF]" />
           <span className="absolute bottom-0 right-0 top-0 w-px bg-[#C9D6DF]" />
 
@@ -193,6 +214,12 @@ export default function RegisterPage() {
           </div>
         </section>
       </main>
+
+      <footer className="border-t border-[#C9D6DF] bg-white">
+        <div className="mx-auto max-w-6xl px-6 py-4 text-sm text-[#52616B]">
+          &copy; 2026 Invoice App.
+        </div>
+      </footer>
     </div>
   );
 }
