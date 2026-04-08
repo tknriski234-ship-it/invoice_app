@@ -1,7 +1,6 @@
 "use client";
 
 import { MainHeader } from "./components/layout/header";
-import { PageMain } from "./components/layout/main";
 import { PageFooter } from "./components/layout/footer";
 
 // Tanggung jawab:
@@ -12,7 +11,6 @@ export default function Page() {
   return (
     <div className="min-h-screen bg-white text-slate-900">
       <MainHeader />
-      <PageMain />
       <PageFooter />
     </div>
   );
