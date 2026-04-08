@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { SectionTitle } from "../components/ui/section-title";
-import { DashboardHeader } from "../features/dashboard/components/dashboard-header";
-import { DashboardSidebar } from "../features/dashboard/components/dashboard-sidebar";
-import { DashboardStats } from "../features/dashboard/components/dashboard-stats";
-import { CreateInvoiceForm } from "../features/dashboard/components/create-invoice-form";
-import { RecentInvoices } from "../features/dashboard/components/recent-invoices";
-import { useDashboard } from "../features/dashboard/hooks/useDashboard";
+import { SectionTitle } from "@/components/ui/section-title";
+import { DashboardHeader } from "@/features/dashboard/components/dashboard-header";
+import { DashboardSidebar } from "@/features/dashboard/components/dashboard-sidebar";
+import { DashboardStats } from "@/features/dashboard/components/dashboard-stats";
+import { CreateInvoiceForm } from "@/features/dashboard/components/create-invoice-form";
+import { RecentInvoices } from "@/features/dashboard/components/recent-invoices";
+import { useDashboard } from "@/features/dashboard/hooks/useDashboard";
 
 export default function DashboardPage() {
   const {

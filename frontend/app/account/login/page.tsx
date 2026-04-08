@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useLogin } from "@/app/features/auth/hooks/useLogin";
+import { useLogin } from "@/features/auth/hooks/useLogin";
 
 export default function LoginPage() {
   const { handleLogin, error, loading } = useLogin();

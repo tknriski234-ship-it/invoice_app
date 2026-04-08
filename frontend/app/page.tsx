@@ -1,7 +1,7 @@
 "use client";
 
-import { MainHeader } from "./components/layout/header";
-import { PageFooter } from "./components/layout/footer";
+import { MainHeader } from "../components/layout/header";
+import { PageFooter } from "../components/layout/footer";
 
 export default function Page() {
   return (

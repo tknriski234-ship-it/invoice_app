@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRegister } from "@/app/features/auth/hooks/useRegister";
+import { useRegister } from "@/features/auth/hooks/useRegister";
 
 export default function RegisterPage() {
   const { error, success, loading, handleRegister } = useRegister();
