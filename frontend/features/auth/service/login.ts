@@ -1,7 +1,6 @@
 import { loginSchema } from "../schema/login-schema";
 import { LoginPayload, LoginResponse } from "../types";
-
-const AUTH_API_BASE_URL = "http://localhost:8000";
+import { API_BASE_URL } from "@/lib/constants";
 
 export async function loginUser(
   loginRequest: LoginPayload,
@@ -11,7 +10,7 @@ export async function loginUser(
   formData.append("username", payload.email);
   formData.append("password", payload.password);
 
-  const response = await fetch(`${AUTH_API_BASE_URL}/user/login`, {
+  const response = await fetch(`${API_BASE_URL}/users/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",

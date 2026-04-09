@@ -20,6 +20,3 @@ export type InvoiceItem = {
 export type InvoiceItemCreatePayload = z.infer<typeof createInvoiceItemSchema>;
 export type InvoiceItemUpdatePayload = z.infer<typeof updateInvoiceItemSchema>;
 
-export type InvoiceItemDeleteResponse = {
-  message: string;
-};

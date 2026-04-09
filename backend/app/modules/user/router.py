@@ -8,7 +8,7 @@ from app.core.exception import UserAlreadyExists , InvalidCredentials , UserNotA
 from app.core.dependencies import get_current_user
 from app.modules.user.models import User
 
-router = APIRouter(prefix="/user",tags=["User"])
+router = APIRouter(prefix="/users",tags=["User"])
 
 @router.post("/create" ,response_model= UserOut)
 def create_user(

@@ -8,7 +8,7 @@ from app.core.exception import InvoiceAlreadyExists, InvoiceNotFound
 from app.modules.user.models import User
 from app.core.dependencies import get_current_user
 
-router = APIRouter(prefix="/invoice",tags=["Invoice"])
+router = APIRouter(prefix="/invoices",tags=["Invoice"])
 
 @router.post("/" , response_model=InvoiceOut)
 def create_invoice(

@@ -2,14 +2,16 @@ import {
   createInvoiceItemSchema,
   updateInvoiceItemSchema,
 } from "../schema/invoice-item-schema";
+
+import { ApiMessageResponse } from "@/types/api-types";
+
 import {
   InvoiceItem,
   InvoiceItemCreatePayload,
-  InvoiceItemDeleteResponse,
   InvoiceItemUpdatePayload,
 } from "../type";
 
-const INVOICE_ITEM_API_BASE_URL = "http://localhost:8000";
+import { API_BASE_URL } from "@/lib/constants";
 
 export async function createInvoiceItem(
   token: string,
@@ -18,7 +20,7 @@ export async function createInvoiceItem(
 ): Promise<InvoiceItem> {
   const dataPayload = createInvoiceItemSchema.parse(payload);
   const response = await fetch(
-    `${INVOICE_ITEM_API_BASE_URL}/invoice/${invoicePublicId}/items`,
+    `${API_BASE_URL}/invoices/${invoicePublicId}/items`,
     {
       method: "POST",
       headers: {
@@ -42,7 +44,7 @@ export async function getInvoiceItems(
   invoicePublicId: string,
 ): Promise<InvoiceItem[]> {
   const response = await fetch(
-    `${INVOICE_ITEM_API_BASE_URL}/invoice/${invoicePublicId}/items`,
+    `${API_BASE_URL}/invoices/${invoicePublicId}/items`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -63,7 +65,7 @@ export async function getInvoiceItemDetail(
   itemPublicId: string,
 ): Promise<InvoiceItem> {
   const response = await fetch(
-    `${INVOICE_ITEM_API_BASE_URL}/invoice/items/${itemPublicId}`,
+    `${API_BASE_URL}/invoices/items/${itemPublicId}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -86,7 +88,7 @@ export async function updateInvoiceItem(
 ): Promise<InvoiceItem> {
   const dataPayload = updateInvoiceItemSchema.parse(payload);
   const response = await fetch(
-    `${INVOICE_ITEM_API_BASE_URL}/invoice/items/${itemPublicId}`,
+    `${API_BASE_URL}/invoices/items/${itemPublicId}`,
     {
       method: "PATCH",
       headers: {
@@ -108,9 +110,9 @@ export async function updateInvoiceItem(
 export async function deleteInvoiceItem(
   token: string,
   itemPublicId: string,
-): Promise<InvoiceItemDeleteResponse> {
+): Promise<ApiMessageResponse> {
   const response = await fetch(
-    `${INVOICE_ITEM_API_BASE_URL}/invoice/items/${itemPublicId}`,
+    `${API_BASE_URL}/invoices/items/${itemPublicId}`,
     {
       method: "DELETE",
       headers: {
@@ -123,6 +125,6 @@ export async function deleteInvoiceItem(
     throw new Error("Failed to delete invoice item");
   }
 
-  const data: InvoiceItemDeleteResponse = await response.json();
+  const data: ApiMessageResponse = await response.json();
   return data;
 }

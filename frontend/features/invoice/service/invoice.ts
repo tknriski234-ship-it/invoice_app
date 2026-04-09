@@ -5,18 +5,19 @@ import {
 import {
   Invoice,
   InvoiceCreatePayload,
-  InvoiceDeleteResponse,
   InvoiceUpdatePayload,
 } from "../type";
 
-const INVOICE_API_BASE_URL = "http://localhost:8000";
+import { ApiMessageResponse } from "@/types/api-types";
+
+import { API_BASE_URL } from "@/lib/constants";
 
 export async function createInvoice(
   token: string,
   payload: InvoiceCreatePayload,
 ): Promise<Invoice> {
   const dataPayload = createInvoiceSchema.parse(payload);
-  const response = await fetch(`${INVOICE_API_BASE_URL}/invoice/`, {
+  const response = await fetch(`${API_BASE_URL}/invoices/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -34,7 +35,7 @@ export async function createInvoice(
 }
 
 export async function getMyInvoices(token: string): Promise<Invoice[]> {
-  const response = await fetch(`${INVOICE_API_BASE_URL}/invoice/me`, {
+  const response = await fetch(`${API_BASE_URL}/invoices/me`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -52,7 +53,7 @@ export async function getInvoiceDetail(
   token: string,
   publicId: string,
 ): Promise<Invoice> {
-  const response = await fetch(`${INVOICE_API_BASE_URL}/invoice/${publicId}`, {
+  const response = await fetch(`${API_BASE_URL}/invoices/${publicId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -72,7 +73,7 @@ export async function updateInvoice(
   payload: InvoiceUpdatePayload,
 ): Promise<Invoice> {
   const dataPayload = updateInvoiceSchema.parse(payload);
-  const response = await fetch(`${INVOICE_API_BASE_URL}/invoice/${publicId}`, {
+  const response = await fetch(`${API_BASE_URL}/invoices/${publicId}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -92,8 +93,8 @@ export async function updateInvoice(
 export async function deleteInvoice(
   token: string,
   publicId: string,
-): Promise<InvoiceDeleteResponse> {
-  const response = await fetch(`${INVOICE_API_BASE_URL}/invoice/${publicId}`, {
+): Promise<ApiMessageResponse> {
+  const response = await fetch(`${API_BASE_URL}/invoices/${publicId}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -104,6 +105,6 @@ export async function deleteInvoice(
     throw new Error("Failed to delete invoice");
   }
 
-  const data: InvoiceDeleteResponse = await response.json();
+  const data: ApiMessageResponse = await response.json();
   return data;
 }

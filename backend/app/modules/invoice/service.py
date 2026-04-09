@@ -33,9 +33,14 @@ class InvoiceService:
     def _generate_invoice_number(self) -> str:
         year = datetime.now().year
 
-        stmt = (select(Invoice).where(Invoice.invoice_number.like(f"INV-{year}-%")).order_by(Invoice.id.desc()))
-        
-        last_invoice = self.db.execute(stmt).scalar_one_or_none()
+        stmt = (
+            select(Invoice)
+            .where(Invoice.invoice_number.like(f"INV-{year}-%"))
+            .order_by(Invoice.id.desc())
+            .limit(1)
+        )
+
+        last_invoice = self.db.execute(stmt).scalars().first()
 
         if not last_invoice:
             sequence = 1

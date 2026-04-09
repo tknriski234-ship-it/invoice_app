@@ -27,7 +27,3 @@ export type Invoice = {
 
 export type InvoiceCreatePayload = z.infer<typeof createInvoiceSchema>;
 export type InvoiceUpdatePayload = z.infer<typeof updateInvoiceSchema>;
-
-export type InvoiceDeleteResponse = {
-  message: string;
-};

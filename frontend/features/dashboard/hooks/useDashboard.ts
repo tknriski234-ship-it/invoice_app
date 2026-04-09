@@ -9,6 +9,7 @@ import {
 } from "../service/dashboard";
 import { DashboardState } from "../types";
 import { InvoiceCreatePayload } from "../../invoice/type";
+import { AUTH_TOKEN_KEY } from "@/lib/constants";
 
 const initialState: DashboardState = {
   user: null,
@@ -58,7 +59,7 @@ export function useDashboard() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
 
     if (!token) {
       router.push("/account/login");
@@ -69,7 +70,7 @@ export function useDashboard() {
   }, [router]);
 
   const handleRefresh = async () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
 
     if (!token) {
       router.push("/account/login");
@@ -80,7 +81,7 @@ export function useDashboard() {
   };
 
   const handleCreateInvoice = async (payload: InvoiceCreatePayload) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
 
     if (!token) {
       router.push("/account/login");
@@ -115,7 +116,7 @@ export function useDashboard() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem(AUTH_TOKEN_KEY);
     router.push("/account/login");
   };
 

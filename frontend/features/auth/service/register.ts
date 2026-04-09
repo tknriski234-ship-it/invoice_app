@@ -1,13 +1,12 @@
 import { registerSchema } from "../schema/register-schema";
 import { RegisterPayload, RegisterResponse } from "../types";
-
-const AUTH_API_BASE_URL = "http://localhost:8000";
+import { API_BASE_URL } from "@/lib/constants";
 
 export async function registerUser(
   registerRequest: RegisterPayload,
 ): Promise<RegisterResponse> {
   const payload = registerSchema.parse(registerRequest);
-  const response = await fetch(`${AUTH_API_BASE_URL}/user/create`, {
+  const response = await fetch(`${API_BASE_URL}/users/create`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

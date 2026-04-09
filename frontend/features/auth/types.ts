@@ -27,7 +27,3 @@ export type LoginResponse = {
 };
 
 export type RegisterResponse = UserProfile;
-
-export type AccountMessageResponse = {
-  message: string;
-};

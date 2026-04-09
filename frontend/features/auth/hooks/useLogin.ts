@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { loginUser } from "../service/login";
 import { LoginPayload } from "../types";
+import { AUTH_TOKEN_KEY } from "@/lib/constants";
 
 export function useLogin() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export function useLogin() {
 
     try {
       const response = await loginUser(data);
-      localStorage.setItem("token", response.access_token);
+      localStorage.setItem(AUTH_TOKEN_KEY, response.access_token);
       router.push("/dashboard");
     } catch (loginError: unknown) {
       if (loginError instanceof Error) {

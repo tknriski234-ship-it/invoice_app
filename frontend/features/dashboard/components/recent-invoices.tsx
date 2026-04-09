@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Invoice } from "../../invoice/type";
 
 type RecentInvoicesProps = {
@@ -53,6 +54,12 @@ export function RecentInvoices({
                 <p className="text-sm text-slate-500">
                   {invoice.invoice_number}
                 </p>
+                <Link
+                  href={`/invoice/${invoice.public_id}`}
+                  className="inline-block text-sm font-medium text-slate-700 underline underline-offset-4 transition hover:text-slate-950"
+                >
+                  View details
+                </Link>
               </div>
 
               <div className="text-right">
