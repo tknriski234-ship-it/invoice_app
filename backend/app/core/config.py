@@ -7,6 +7,8 @@ BASEDIR = Path(__file__).resolve().parents[2]
 class Settings(BaseSettings):
     database_url : str = ""
     secret_token : str = ""
+    algorithm : str = ""
+    access_token_expire_minute : int = 30
 
 
     model_config = SettingsConfigDict(

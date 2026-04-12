@@ -30,7 +30,7 @@ class User(Base):
     
     is_verified : Mapped[bool] = mapped_column(Boolean,default=False)
 
-    is_active : Mapped[bool] = mapped_column(Boolean, default=True)
+    is_active : Mapped[bool] = mapped_column(Boolean, default=True , index=True)
 
     invoices: Mapped[list["Invoice"]] = relationship(
     back_populates="user",

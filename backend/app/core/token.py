@@ -2,8 +2,8 @@ from jose import jwt ,JWTError
 from datetime import datetime , timedelta , timezone
 from app.core.config import settings
 SECRET_KEY = settings.secret_token
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ALGORITHM = settings.algorithm
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minute
 
 def create_access_token(data : dict) -> str:
     to_encode = data.copy()

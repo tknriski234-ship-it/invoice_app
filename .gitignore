@@ -2,4 +2,4 @@
 *.codex
 *.png
 
-/.vscode
+.vscode/
