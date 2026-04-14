@@ -9,4 +9,10 @@ export type UserProfile = {
   last_login: string | null;
 };
 
+export type LoginResponse = {
+    access_token: string;
+    token_type: string;
+    user: UserProfile;
+};
+
 export type RegisterResponse = UserProfile;

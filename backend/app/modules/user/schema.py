@@ -29,6 +29,12 @@ class UserCreate(BaseModel):
         if not value:
             raise ValueError("nama tidak boleh kosong")
         return value
+    
+    @field_validator("email")
+    @classmethod
+    def normalize_email(cls, value: str):
+        return value.strip().lower()
+
 
 class UserLogin(BaseModel):
     email : EmailStr

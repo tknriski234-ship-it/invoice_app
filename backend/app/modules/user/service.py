@@ -36,7 +36,8 @@ class UserService:
             raise
 
     def authenticate_user(self, data : UserLogin) -> LoginResponse:
-        user = self._get_user_by_email(data.email)
+        normalized_email = data.email.strip().lower()
+        user = self._get_user_by_email(normalized_email)
         if not user:
             raise InvalidCredentials("Email atau password salah")
 
