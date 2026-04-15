@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { deleteInvoiceItemService } from "./service";
 import { deleteInvoiceItemSchema } from "./schema";
+import { getErrorMessage } from "@/lib/error";
 
 export function useInvoiceItemDelete() {
   const [loading, setLoading] = useState(false);
@@ -19,6 +20,7 @@ export function useInvoiceItemDelete() {
 
       if (!parsed.success) {
         setError(parsed.error.issues[0]?.message || "Invalid input");
+        setLoading(false);
         return;
       }
 
@@ -26,7 +28,7 @@ export function useInvoiceItemDelete() {
       setSuccess(result.message);
       return result;
     } catch (err: unknown) {
-      setError((err as Error).message || "Something went wrong");
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }

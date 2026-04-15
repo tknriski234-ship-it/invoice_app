@@ -15,4 +15,10 @@ export type LoginResponse = {
     user: UserProfile;
 };
 
+export type ErroResponse = {
+  detail?: string
+  message?: string
+
+}
+
 export type RegisterResponse = UserProfile;

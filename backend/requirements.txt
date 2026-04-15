@@ -10,3 +10,4 @@ python-jose
 argon2-cffi
 pydantic[email]
 python-multipart
+reportlab

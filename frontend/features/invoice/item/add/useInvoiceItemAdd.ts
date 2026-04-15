@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { InvoiceItemAddSchema } from "./schema";
 import { addInvoiceItemService } from "./service";
+import { getErrorMessage } from "@/lib/error";
 
 export function useInvoiceItemAdd() {
   const [loading, setLoading] = useState(false);
@@ -23,6 +24,7 @@ export function useInvoiceItemAdd() {
 
       if (!parsed.success) {
         setError(parsed.error.issues[0]?.message || "Invalid input");
+        setLoading(false);
         return;
       }
 
@@ -30,7 +32,7 @@ export function useInvoiceItemAdd() {
       setSuccess(`Invoice item added: ${result.title}`);
       return result;
     } catch (err: unknown) {
-      setError((err as Error).message || "Something went wrong");
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }

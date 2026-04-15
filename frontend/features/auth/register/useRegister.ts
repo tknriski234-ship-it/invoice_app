@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { RegisterSchema } from "./schema";
 import { registerService } from "./service";
+import { getErrorMessage } from "@/lib/error";
 
 export function useRegister() {
   const [loading, setLoading] = useState(false);
@@ -20,6 +21,7 @@ export function useRegister() {
 
       if (!parsed.success) {
         setError(parsed.error.issues[0]?.message || "Invalid input");
+        setLoading(false);
         return;
       }
 
@@ -29,7 +31,7 @@ export function useRegister() {
       // 3. SUCCESS STATE
       setSuccess(`Register success for ${result.email}`);
     } catch (err: unknown) {
-      setError((err as Error).message || "Something went wrong");
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }

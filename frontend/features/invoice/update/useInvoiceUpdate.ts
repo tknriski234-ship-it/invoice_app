@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { updateInvoiceService } from "./service";
 import { updateInvoiceSchema } from "./schema";
+import { getErrorMessage } from "@/lib/error";
 
 export function useInvoiceUpdate() {
   const [loading, setLoading] = useState(false);
@@ -19,6 +20,7 @@ export function useInvoiceUpdate() {
 
       if (!parsed.success) {
         setError(parsed.error.issues[0]?.message || "Invalid input");
+        setLoading(false);
         return;
       }
 
@@ -26,7 +28,7 @@ export function useInvoiceUpdate() {
       setSuccess(`Invoice updated: ${result.invoice_number}`);
       return result;
     } catch (err: unknown) {
-      setError((err as Error).message || "Something went wrong");
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }

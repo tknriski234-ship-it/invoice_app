@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { loginService } from "./service";
 import { LoginSchema } from "./schema";
+import { getErrorMessage } from "@/lib/error";
 
 export function useLogin() {
     const router = useRouter();
@@ -19,6 +20,7 @@ export function useLogin() {
 
             if (!parsed.success) {
                 setError(parsed.error.issues[0]?.message || "invalid input");
+                setLoading(false);
                 return;
             }
 
@@ -27,7 +29,7 @@ export function useLogin() {
             localStorage.setItem("token", result.access_token);
             router.push("/dashboard");
         }   catch (err:unknown) {
-            setError((err as Error).message || "something went wrong");
+            setError(getErrorMessage(err));
         }   finally {
             setLoading(false);
         }

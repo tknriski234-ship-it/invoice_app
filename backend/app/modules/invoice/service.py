@@ -7,6 +7,7 @@ from app.core.exception import InvoiceAlreadyExists ,InvoiceNotFound
 from app.modules.invoice.models import Invoice
 from app.modules.invoice.schema import InvoiceCreate,InvoiceStatus ,InvoiceUpdate
 from app.modules.user.models import User
+from .pdf import generate_invoice_pdf
 
 
 class InvoiceService:
@@ -109,3 +110,10 @@ class InvoiceService:
         except Exception:
             self.db.rollback()
             raise
+    def get_invoice_pdf(self,current_user : User, public_id : uuid.UUID):
+        invoice = self._get_owned_invoice(current_user,public_id)
+
+        if not invoice.items:
+            raise InvoiceNotFound("Invoice tidak ditemukan")
+        
+        return generate_invoice_pdf(invoice)
