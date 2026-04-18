@@ -2,4 +2,6 @@
 *.codex
 *.png
 
-.vscode/
+/.vscode
+
+/contoh

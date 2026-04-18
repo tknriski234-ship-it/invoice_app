@@ -24,18 +24,14 @@ def create_user(
         raise HTTPException(status_code=400 , detail=e.message)
 
 
-@router.post("/login" , response_model=LoginResponse)
+@router.post("/logins" , response_model=LoginResponse) #endpoint utama tapi masih ditambah logins untuk test swagger aja
 def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    data : UserLogin,
     db : Session = Depends(get_db)
 ):
     service = UserService(db)
 
     try:
-        data = UserLogin(
-            email=form_data.username,
-            password=form_data.password
-)
         return service.authenticate_user(data)
     except InvalidCredentials as e:
         raise HTTPException(status_code=401 , detail= e.message)
@@ -82,3 +78,22 @@ def change_password(
     service.change_password(current_user , data)
 
     return {"message" : "Password berhasil di ubah"}
+
+@router.post("/login" , response_model=LoginResponse)
+def login_dummy(
+    form_data : OAuth2PasswordRequestForm = Depends(),
+    db : Session = Depends(get_db)
+):
+    service = UserService(db)
+    
+
+    try:
+        data = UserLogin(
+            email=form_data.username,
+            password=form_data.password
+        )
+        return service.authenticate_user(data)
+    except InvalidCredentials as e:
+        raise HTTPException(status_code=401 , detail= e.message)
+    except UserNotActive as e:
+        raise HTTPException(status_code=403 , detail= e.message)
