@@ -1,5 +1,8 @@
-export default function dashBoardPage(){
-    return (
-        <h1>HELLO WORLD</h1>
-    )
+export default function DashboardPage() {
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      <p>Selamat datang, user!</p>
+    </div>
+  );
 }

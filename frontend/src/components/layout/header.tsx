@@ -3,20 +3,32 @@
 import Link from "next/link";
 import Button from "../ui/button";
 
-export default function HomeHeader(){
-    return(
-        <header className="w-full flex items-center justify-between px-6 py-4 border-b mx-auto">
-            <Link href="/">Invoice App</Link>
+export default function HomeHeader() {
+  return (
+    <header className="w-full border-b border-slate-200 bg-white">
+      <div className="max-w-5xl mx-auto flex items-center justify-between px-6 py-4">
+        
+        {/* LOGO */}
+        <Link href="/" className="text-sm font-semibold text-slate-800">
+          Invoice App
+        </Link>
 
-            <div className="flex items-center gap-2 mx-2 px-0">
-                <Link href="/account/login">
-                    <Button variant="primary" className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition">Login</Button>
-                </Link>
-                <Link href="/account/register" >
-                    <Button variant="primary" className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition">register</Button>
-                </Link>
-            </div>
-            
-        </header>
-    )
+        {/* ACTION */}
+        <div className="flex items-center gap-2">
+          <Link href="/account/login">
+            <Button variant="ghost" className="px-4 py-2">
+              Login
+            </Button>
+          </Link>
+
+          <Link href="/account/register">
+            <Button variant="primary" className="px-4 py-2">
+              Register
+            </Button>
+          </Link>
+        </div>
+
+      </div>
+    </header>
+  );
 }

@@ -14,7 +14,7 @@ export const RegisterSchema = z.object({
     message: "Invalid email address",
   }),
   password: z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH, {
-    message: `Maksimal ${FULL_NAME_MAX_LENGTH} karakter`,
+    message: `Maksimal ${PASSWORD_MAX_LENGTH} karakter`,
   }),
 });
 

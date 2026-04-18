@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { deleteInvoiceItemService } from "./services";
-import { deleteInvoiceItemSchema } from "./invoiceItemDelete.schema";
+import {
+  deleteInvoiceItemSchema,
+  DeleteInvoiceItemInput,
+} from "./invoiceItemDelete.schema";
 import { getErrorMessage } from "@/lib/error";
 
 export function useInvoiceItemDelete() {
@@ -10,7 +13,9 @@ export function useInvoiceItemDelete() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  async function handleDeleteInvoiceItem(token: string, input: unknown) {
+  async function handleDeleteInvoiceItem(input: DeleteInvoiceItemInput) { //if (!confirm("Yakin mau hapus item ini?")) return; tambahin di ui nanti
+    if (loading) return;
+
     setLoading(true);
     setError(null);
     setSuccess(null);
@@ -20,13 +25,20 @@ export function useInvoiceItemDelete() {
 
       if (!parsed.success) {
         setError(parsed.error.issues[0]?.message || "Invalid input");
-        setLoading(false);
+        return;
+      }
+
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setError("Unauthorized");
         return;
       }
 
       const result = await deleteInvoiceItemService(token, parsed.data);
+
       setSuccess(result.message);
-      return result;
+      return result; // konsisten sama add item
     } catch (err: unknown) {
       setError(getErrorMessage(err));
     } finally {

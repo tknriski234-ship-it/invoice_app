@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { InvoiceItemAddSchema } from "./invoiceItemAdd.schema";
+import { InvoiceItemAddSchema, InvoiceItemAddInput } from "./invoiceItemAdd.schema";
 import { addInvoiceItemService } from "./service";
 import { getErrorMessage } from "@/lib/error";
 
@@ -12,9 +12,10 @@ export function useInvoiceItemAdd() {
 
   async function handleAddInvoiceItem(
     publicId: string,
-    token: string,
-    input: unknown,
+    input: InvoiceItemAddInput
   ) {
+    if (loading) return;
+
     setLoading(true);
     setError(null);
     setSuccess(null);
@@ -24,13 +25,25 @@ export function useInvoiceItemAdd() {
 
       if (!parsed.success) {
         setError(parsed.error.issues[0]?.message || "Invalid input");
-        setLoading(false);
         return;
       }
 
-      const result = await addInvoiceItemService(publicId, token, parsed.data);
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setError("Unauthorized");
+        return;
+      }
+
+      const result = await addInvoiceItemService(
+        publicId,
+        token,
+        parsed.data
+      );
+
       setSuccess(`Invoice item added: ${result.title}`);
-      return result;
+
+      return result; // ✅ sekarang konsisten: selalu return kalau sukses
     } catch (err: unknown) {
       setError(getErrorMessage(err));
     } finally {

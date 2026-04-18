@@ -1,10 +1,10 @@
 import { env } from "@/config/env";
 import { Invoice } from "./invoiceCreate.types";
-import { createInvoice } from "./invoiceCreate.schema";
+import { CreateInvoice } from "./invoiceCreate.schema";
 
 export async function createInvoiceApi(
   token:string,
-  payload:createInvoice,
+  payload:CreateInvoice,
 ): Promise <Invoice> {
   const res = await fetch(`${env.NEXT_PUBLIC_API_URL}/invoices`,
     {method : "POST",

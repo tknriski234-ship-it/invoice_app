@@ -2,15 +2,17 @@
 
 import { useState } from "react";
 import { deleteInvoiceService } from "./service";
-import { deleteInvoiceSchema } from "./invoiceDelete.schema";
+import { deleteInvoiceSchema, DeleteInvoiceInput } from "./invoiceDelete.schema";
 import { getErrorMessage } from "@/lib/error";
 
 export function useDeleteInvoice() {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null> (null);
+  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-    
-  async function handleDeleteInvoice(token:string, input:unknown) {
+
+  async function handleDeleteInvoice(input: DeleteInvoiceInput) { //if (!confirm("Yakin mau hapus invoice ini?")) return; di page
+    if (loading) return;
+
     setLoading(true);
     setError(null);
     setSuccess(null);
@@ -20,24 +22,30 @@ export function useDeleteInvoice() {
 
       if (!parsed.success) {
         setError(parsed.error.issues[0]?.message || "Invalid input");
-        setLoading(false);
         return;
-        }
+      }
+
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setError("Unauthorized");
+        return;
+      }
 
       const result = await deleteInvoiceService(token, parsed.data);
-          setSuccess(result.message)
-      } catch(err : unknown ) {
-          setError(getErrorMessage(err))
-      } finally {
-          setLoading(false)
-      }
-    }
 
-    return {
-      loading,
-      error,
-      success,
-      handleDeleteInvoice
+      setSuccess(result.message);
+    } catch (err: unknown) {
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
     }
+  }
+
+  return {
+    loading,
+    error,
+    success,
+    handleDeleteInvoice,
+  };
 }
-

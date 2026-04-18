@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { loginService } from "./service";
-import { LoginSchema } from "./login.schema";
+import { LoginSchema , LoginInput} from "./login.schema";
 import { getErrorMessage } from "@/lib/error";
 
 export function useLogin() {
@@ -11,8 +11,9 @@ export function useLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleLogin(input: unknown) {
+  async function handleLogin(input: LoginInput) {
     if (loading) return;
+
     setLoading(true);
     setError(null);
 
@@ -20,7 +21,7 @@ export function useLogin() {
       const parsed = LoginSchema.safeParse(input);
 
       if (!parsed.success) {
-        setError(parsed.error.issues[0]?.message || "invalid input");
+        setError(parsed.error.issues[0]?.message || "Invalid input");
         return;
       }
 

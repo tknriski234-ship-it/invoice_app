@@ -12,5 +12,5 @@ export const createInvoiceSchema = z
       path : ["due_date"],
   });
 
-export type createInvoice = z.infer<typeof createInvoiceSchema>;
+export type CreateInvoice = z.infer<typeof createInvoiceSchema>;
 

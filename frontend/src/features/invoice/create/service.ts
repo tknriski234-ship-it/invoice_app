@@ -1,9 +1,9 @@
 import { createInvoiceApi } from "./invoiceCreate.api";
-import type { createInvoice } from "./invoiceCreate.schema";
+import type { CreateInvoice } from "./invoiceCreate.schema";
 
 export async function createInvoiceService(
   token: string,
-  data: createInvoice,
+  data: CreateInvoice,
 ) {
   const cleaned = {
     ...data,

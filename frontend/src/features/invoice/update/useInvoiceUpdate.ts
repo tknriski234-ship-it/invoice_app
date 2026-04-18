@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { updateInvoiceService } from "./service";
-import { updateInvoiceSchema } from "./invoiceUpdate.schema";
+import {
+  updateInvoiceSchema,
+  UpdateInvoiceInput,
+} from "./invoiceUpdate.schema";
 import { getErrorMessage } from "@/lib/error";
 
 export function useInvoiceUpdate() {
@@ -10,7 +13,9 @@ export function useInvoiceUpdate() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  async function handleUpdateInvoice(token: string, input: unknown) {
+  async function handleUpdateInvoice(input: UpdateInvoiceInput) {
+    if (loading) return;
+
     setLoading(true);
     setError(null);
     setSuccess(null);
@@ -20,11 +25,18 @@ export function useInvoiceUpdate() {
 
       if (!parsed.success) {
         setError(parsed.error.issues[0]?.message || "Invalid input");
-        setLoading(false);
+        return;
+      }
+
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setError("Unauthorized");
         return;
       }
 
       const result = await updateInvoiceService(token, parsed.data);
+
       setSuccess(`Invoice updated: ${result.invoice_number}`);
       return result;
     } catch (err: unknown) {
