@@ -5,7 +5,7 @@ import Button from "../ui/button";
 
 export default function HomeHeader() {
   return (
-    <header className="w-full border-b border-slate-200 bg-white">
+    <header className="w-full border-full border-slate-200 bg-white">
       <div className="max-w-5xl mx-auto flex items-center justify-between px-6 py-4">
         
         {/* LOGO */}

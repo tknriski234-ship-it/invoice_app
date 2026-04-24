@@ -6,6 +6,7 @@ import { useLogin } from "@/features/auth/login/useLogin";
 import InputForm from "@/components/ui/Form";
 import Alert from "@/components/ui/alert";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import LoginHeader from "@/components/auth/layout/loginheader";
 
 export default function LoginPage() {
   const { error, loading, handleLogin } = useLogin();
@@ -16,7 +17,7 @@ export default function LoginPage() {
   return (
     <>
       {/* 🔥 HEADER TARUH DI SINI NANTI */}
-      {/* <Header /> */}
+      <LoginHeader/>
 
       <main className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
         <div className="w-full max-w-sm bg-white p-6 rounded-2xl shadow-md border border-slate-200 flex flex-col gap-5">
