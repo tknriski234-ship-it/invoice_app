@@ -1,4 +1,4 @@
-from fastapi import APIRouter , Depends , HTTPException
+from fastapi import APIRouter , Depends , HTTPException ,Response 
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.db.session import get_db
@@ -7,6 +7,7 @@ from app.modules.user.service import UserService
 from app.core.exception import UserAlreadyExists , InvalidCredentials , UserNotActive
 from app.core.dependencies import get_current_user
 from app.modules.user.models import User
+
 
 router = APIRouter(prefix="/users",tags=["User"])
 
@@ -24,15 +25,27 @@ def create_user(
         raise HTTPException(status_code=400 , detail=e.message)
 
 
-@router.post("/logins" , response_model=LoginResponse) #endpoint utama tapi masih ditambah logins untuk test swagger aja
+@router.post("/login" , response_model=LoginResponse) #endpoint utama tapi masih ditambah logins untuk test swagger aja
 def login(
     data : UserLogin,
+    response : Response,
     db : Session = Depends(get_db)
 ):
     service = UserService(db)
 
     try:
-        return service.authenticate_user(data)
+        login_data = service.authenticate_user(data)
+        
+        response.set_cookie(
+            key="access_token",
+            value=login_data.access_token,
+            httponly=True,
+            secure=False, # ganti True jika pake https
+            samesite="lax",
+            max_age=60 * 60 *24
+        )
+
+        return login_data
     except InvalidCredentials as e:
         raise HTTPException(status_code=401 , detail= e.message)
     except UserNotActive as e:
@@ -79,7 +92,7 @@ def change_password(
 
     return {"message" : "Password berhasil di ubah"}
 
-@router.post("/login" , response_model=LoginResponse)
+@router.post("/logins" , response_model=LoginResponse)
 def login_dummy(
     form_data : OAuth2PasswordRequestForm = Depends(),
     db : Session = Depends(get_db)
@@ -97,3 +110,8 @@ def login_dummy(
         raise HTTPException(status_code=401 , detail= e.message)
     except UserNotActive as e:
         raise HTTPException(status_code=403 , detail= e.message)
+    
+@router.post("/logout")
+def logout(response : Response):
+    response.delete_cookie("acccess_token")
+    return {"message" : "Logout berhasil"}

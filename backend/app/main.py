@@ -19,7 +19,7 @@ def get_cek_db(db : Session = Depends(get_db)):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # nanti ganti domain
+    allow_origins=["http://localhost:3000"],  # nanti ganti domain
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
