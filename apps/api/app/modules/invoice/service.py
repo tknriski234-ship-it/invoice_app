@@ -14,8 +14,11 @@ class InvoiceService:
     def __init__(self, db : Session) -> None:
         self.db = db
 
-    def _get_invoice_by_number(self, invoice_number: str) -> Invoice | None:
-        stmt = select(Invoice).where(Invoice.invoice_number == invoice_number)
+    def _get_invoice_by_number(self, user_id: int, invoice_number: str) -> Invoice | None:
+        stmt = select(Invoice).where(
+            Invoice.user_id == user_id,
+            Invoice.invoice_number == invoice_number,
+        )
         return self.db.execute(stmt).scalar_one_or_none()
     
     def _get_owned_invoice(self, current_user: User, public_id: uuid.UUID) -> Invoice:
@@ -31,12 +34,15 @@ class InvoiceService:
         return invoice
 
     
-    def _generate_invoice_number(self) -> str:
+    def _generate_invoice_number(self, user_id: int) -> str:
         year = datetime.now().year
 
         stmt = (
             select(Invoice)
-            .where(Invoice.invoice_number.like(f"INV-{year}-%"))
+            .where(
+                Invoice.user_id == user_id,
+                Invoice.invoice_number.like(f"INV-{year}-%"),
+            )
             .order_by(Invoice.id.desc())
             .limit(1)
         )
@@ -52,8 +58,8 @@ class InvoiceService:
         return f"INV-{year}-{sequence:03d}"
 
     def create_invoice(self, current_user: User, data: InvoiceCreate) -> Invoice:
-        invoice_number = self._generate_invoice_number()
-        existing_invoice = self._get_invoice_by_number(invoice_number)
+        invoice_number = self._generate_invoice_number(current_user.id)
+        existing_invoice = self._get_invoice_by_number(current_user.id, invoice_number)
 
         if existing_invoice:
             raise InvoiceAlreadyExists("Nomor invoice sudah digunakan")

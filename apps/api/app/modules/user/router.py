@@ -1,5 +1,4 @@
 from fastapi import APIRouter , Depends , HTTPException ,Response 
-from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.modules.user.schema import UserOut , UserCreate , UserLogin, LoginResponse , UserUpdate ,UserDelete , UserChangePassword
@@ -7,9 +6,12 @@ from app.modules.user.service import UserService
 from app.core.exception import UserAlreadyExists , InvalidCredentials , UserNotActive
 from app.core.dependencies import get_current_user
 from app.modules.user.models import User
+from app.core.config import settings
 
 
 router = APIRouter(prefix="/users",tags=["User"])
+
+ACCESS_TOKEN_COOKIE_NAME = "access_token"
 
 @router.post("/create" ,response_model= UserOut)
 def create_user(
@@ -25,24 +27,25 @@ def create_user(
         raise HTTPException(status_code=400 , detail=e.message)
 
 
-@router.post("/login" , response_model=LoginResponse) #endpoint utama tapi masih ditambah logins untuk test swagger aja
+@router.post("/login" , response_model=LoginResponse)
 def login(
     data : UserLogin,
     response : Response,
     db : Session = Depends(get_db)
 ):
     service = UserService(db)
+    access_token_max_age = settings.access_token_expire_minute * 60
 
     try:
         login_data = service.authenticate_user(data)
         
         response.set_cookie(
-            key="access_token",
+            key=ACCESS_TOKEN_COOKIE_NAME,
             value=login_data.access_token,
             httponly=True,
             secure=False, # ganti True jika pake https
             samesite="lax",
-            max_age=60 * 60 *24
+            max_age=access_token_max_age
         )
 
         return login_data
@@ -92,26 +95,7 @@ def change_password(
 
     return {"message" : "Password berhasil di ubah"}
 
-@router.post("/logins" , response_model=LoginResponse)
-def login_dummy(
-    form_data : OAuth2PasswordRequestForm = Depends(),
-    db : Session = Depends(get_db)
-):
-    service = UserService(db)
-    
-
-    try:
-        data = UserLogin(
-            email=form_data.username,
-            password=form_data.password
-        )
-        return service.authenticate_user(data)
-    except InvalidCredentials as e:
-        raise HTTPException(status_code=401 , detail= e.message)
-    except UserNotActive as e:
-        raise HTTPException(status_code=403 , detail= e.message)
-    
 @router.post("/logout")
 def logout(response : Response):
-    response.delete_cookie("acccess_token")
+    response.delete_cookie(ACCESS_TOKEN_COOKIE_NAME)
     return {"message" : "Logout berhasil"}

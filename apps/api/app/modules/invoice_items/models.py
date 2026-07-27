@@ -1,7 +1,7 @@
 from app.db.base import Base
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped , mapped_column ,relationship
-from sqlalchemy import String, DateTime, ForeignKey , Numeric
+from sqlalchemy import CheckConstraint, String, DateTime, ForeignKey , Numeric
 import uuid
 from datetime import datetime , timezone
 from typing import TYPE_CHECKING
@@ -12,6 +12,10 @@ if TYPE_CHECKING:
 
 class InvoiceItem(Base):
     __tablename__ = "invoice_items"
+    __table_args__ = (
+        CheckConstraint("quantity > 0", name="ck_invoice_items_quantity_positive"),
+        CheckConstraint("unit_price >= 0", name="ck_invoice_items_unit_price_non_negative"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
 

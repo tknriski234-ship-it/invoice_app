@@ -1,7 +1,7 @@
 from app.db.base import Base
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped , mapped_column ,relationship
-from sqlalchemy import String, DateTime, ForeignKey , Numeric , Date
+from sqlalchemy import CheckConstraint, String, DateTime, ForeignKey , Numeric , Date, UniqueConstraint
 import uuid
 from datetime import datetime , timezone ,date
 from typing import TYPE_CHECKING
@@ -13,6 +13,15 @@ if TYPE_CHECKING:
 
 class Invoice(Base):
     __tablename__ = "invoices"
+    __table_args__ = (
+        CheckConstraint("amount >= 0", name="ck_invoices_amount_non_negative"),
+        CheckConstraint("due_date >= issued_date", name="ck_invoices_due_date_after_issued_date"),
+        CheckConstraint(
+            "status IN ('draft', 'sent', 'paid', 'overdue', 'cancelled')",
+            name="ck_invoices_status_valid",
+        ),
+        UniqueConstraint("user_id", "invoice_number", name="uq_invoices_user_invoice_number"),
+    )
 
     id : Mapped[int] = mapped_column(primary_key=True, index=True)
 
@@ -23,7 +32,7 @@ class Invoice(Base):
 
     public_id : Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), unique=True , nullable=False , index=True , default=uuid.uuid4)
 
-    invoice_number : Mapped[str] = mapped_column(String(50), nullable=False, unique=True , index=True)
+    invoice_number : Mapped[str] = mapped_column(String(50), nullable=False, index=True)
 
     title : Mapped[str] = mapped_column(String(1000),nullable=False, unique=False)
 
