@@ -1,14 +1,16 @@
-from pydantic_settings  import BaseSettings ,SettingsConfigDict
 from functools import lru_cache
 from pathlib import Path
+
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASEDIR = Path(__file__).resolve().parents[2]
 
 class Settings(BaseSettings):
-    database_url : str = ""
-    secret_token : str = ""
-    algorithm : str = ""
-    access_token_expire_minute : int = 30
+    database_url: str = Field(..., min_length=1)
+    secret_token: str = Field(..., min_length=32)
+    algorithm: str = "HS256"
+    access_token_expire_minute: int = 30
 
 
     model_config = SettingsConfigDict(
@@ -20,7 +22,7 @@ class Settings(BaseSettings):
     )
 
 @lru_cache
-def get_settings():
+def get_settings() -> Settings:
     return Settings()
 
 settings = get_settings()
