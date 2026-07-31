@@ -7,11 +7,19 @@ from app.core.exception import UserAlreadyExists , InvalidCredentials , UserNotA
 from app.core.dependencies import get_current_user
 from app.modules.user.models import User
 from app.core.config import settings
+from app.core.rate_limiter import rate_limit_login
+from fastapi.security import OAuth2PasswordRequestForm
 
 
 router = APIRouter(prefix="/users",tags=["User"])
 
 ACCESS_TOKEN_COOKIE_NAME = "access_token"
+
+def raise_login_error(error: InvalidCredentials | UserNotActive) -> None:
+    if isinstance(error, InvalidCredentials):
+        raise HTTPException(status_code=401, detail=error.message)
+
+    raise HTTPException(status_code=403, detail=error.message)
 
 @router.post("/create" ,response_model= UserOut)
 def create_user(
@@ -24,13 +32,14 @@ def create_user(
         user = service.create_user(data)
         return user
     except UserAlreadyExists as e:
-        raise HTTPException(status_code=400 , detail=e.message)
+        raise HTTPException(status_code=409 , detail=e.message)
 
 
 @router.post("/login" , response_model=LoginResponse)
 def login(
     data : UserLogin,
     response : Response,
+    _ : None = Depends(rate_limit_login),
     db : Session = Depends(get_db)
 ):
     service = UserService(db)
@@ -49,10 +58,8 @@ def login(
         )
 
         return login_data
-    except InvalidCredentials as e:
-        raise HTTPException(status_code=401 , detail= e.message)
-    except UserNotActive as e:
-        raise HTTPException(status_code=403 , detail= e.message)
+    except (InvalidCredentials, UserNotActive) as e:
+        raise_login_error(e)
 
 
 @router.get("/me", response_model=UserOut)
@@ -79,7 +86,11 @@ def delete_me(
     current_user : User = Depends(get_current_user)
 ):
     service = UserService(db)
-    service.delete_me(current_user , data)
+
+    try:
+        service.delete_me(current_user , data)
+    except InvalidCredentials as e:
+        raise HTTPException(status_code=400, detail=e.message)
 
     return {"message" : "User berhasil di hapus"}
 
@@ -91,7 +102,11 @@ def change_password(
     db : Session = Depends(get_db)
 ):
     service = UserService(db)
-    service.change_password(current_user , data)
+
+    try:
+        service.change_password(current_user , data)
+    except InvalidCredentials as e:
+        raise HTTPException(status_code=400, detail=e.message)
 
     return {"message" : "Password berhasil di ubah"}
 
@@ -99,3 +114,21 @@ def change_password(
 def logout(response : Response):
     response.delete_cookie(ACCESS_TOKEN_COOKIE_NAME)
     return {"message" : "Logout berhasil"}
+
+@router.post("/token", response_model=LoginResponse)
+def login_token(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    _: None = Depends(rate_limit_login),
+    db: Session = Depends(get_db),
+):
+    service = UserService(db)
+
+    data = UserLogin(
+        email=form_data.username,
+        password=form_data.password,
+    )
+
+    try:
+        return service.authenticate_user(data)
+    except (InvalidCredentials, UserNotActive) as e:
+        raise_login_error(e)
